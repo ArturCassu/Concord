@@ -1,10 +1,9 @@
 import asyncio
 import websockets
 import json
-import os
+from aiohttp import web
 
-
-connected_users = {}  # Mapeia user_id para websockets
+connected_users = {}
 
 async def handle_connection(websocket):
     user_id = None
@@ -12,19 +11,15 @@ async def handle_connection(websocket):
         async for message in websocket:
             data = json.loads(message)
 
-            # tem que ter todos os campos necessariamente pq se nao da a porra de invalid arguments
             if "id" in data and "name" in data and "userIds" in data and "messages" in data and "unread" in data:
-                # todo mundo que tiver no campo userIds vai receber a mensagem
                 for target_user_id in data["userIds"]:
                     if target_user_id in connected_users:
-                        target_websocket = connected_users[target_user_id]
-                        await target_websocket.send(json.dumps(data))
-            elif "user_id" in data:  # Conexão inicial para registrar o usuário
+                        await connected_users[target_user_id].send(json.dumps(data))
+            elif "user_id" in data:
                 user_id = data["user_id"]
                 connected_users[user_id] = websocket
                 await websocket.send(json.dumps({"status": "success", "message": f"User {user_id} connected."}))
             else:
-                # se a api receber um json que nao tem os campos obrigatorios ela vai retornar o erro aqui de baixo
                 await websocket.send(json.dumps({"error": "Invalid JSON structure"}))
     except websockets.exceptions.ConnectionClosedError:
         print(f"User {user_id} disconnected.")
@@ -32,11 +27,20 @@ async def handle_connection(websocket):
         if user_id:
             connected_users.pop(user_id, None)
 
-port = int(os.environ.get("PORT", 8765))
+async def health_check(request):
+    return web.Response(text="WebSocket server is up!")
 
-async def main():
-    async with websockets.serve(handle_connection, "0.0.0.0", port):
-        print(f"Servidor WebSocket rodando em ws://0.0.0.0:{port}")
-        await asyncio.Future()
+async def start_servers():
+    # Inicia o WebSocket
+    websocket_server = websockets.serve(handle_connection, "0.0.0.0", 8765)
 
-asyncio.run(main())
+    # Inicia o HTTP pra enganar o Render
+    app = web.Application()
+    app.router.add_get("/", health_check)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    http_site = web.TCPSite(runner, "0.0.0.0", 10000)
+
+    await asyncio.gather(websocket_server, http_site.start())
+
+asyncio.run(start_servers())
