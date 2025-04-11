@@ -3,6 +3,6 @@ services:
     name: websocket-server
     env: python
     rootDir: api/websocket-chat-server
-    buildCommand: pip install -r api/websocket-chat-server/requirements.txt
-    startCommand: python api/websocket-chat-server/server.py
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
     rootDir: backend
