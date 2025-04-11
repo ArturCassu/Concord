@@ -1,6 +1,8 @@
 import asyncio
 import websockets
 import json
+import os
+
 
 connected_users = {}  # Mapeia user_id para websockets
 
@@ -30,9 +32,11 @@ async def handle_connection(websocket):
         if user_id:
             connected_users.pop(user_id, None)
 
+port = int(os.environ.get("PORT", 8765))
+
 async def main():
-    async with websockets.serve(handle_connection, "localhost", 8765):
-        print("Servidor WebSocket rodando em ws://localhost:8765")
+    async with websockets.serve(handle_connection, "0.0.0.0", port):
+        print(f"Servidor WebSocket rodando em ws://0.0.0.0:{port}")
         await asyncio.Future()
 
 asyncio.run(main())
