@@ -32,7 +32,7 @@ async def health_check(request):
 
 async def start_servers():
     # Inicia o WebSocket
-    websocket_server = websockets.serve(handle_connection, "0.0.0.0", 8765)
+    websocket_server = websockets.serve(handle_connection, "0.0.0.0", 10000)
 
     # Inicia o HTTP pra enganar o Render
     app = web.Application()
