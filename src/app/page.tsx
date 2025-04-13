@@ -8,6 +8,7 @@ import {UserGroupModal} from "@/app/components/UserGroupModal";
 import fallback from "@/app/assets/fallback.jpg"
 import logo from "@/app/assets/logo.jpg"
 import useWebSocket from "@/app/hooks/useWebSocket";
+import {User, UserGroupData, MessageData, MessageType} from "@/app/types"
 
 
 export default function Home() {
