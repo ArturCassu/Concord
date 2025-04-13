@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {UserGroupData} from "@/app/page";
+import {UserGroupData} from "@/app/types";
 
 type UserGroupModalProps = {
     isOpen: boolean;

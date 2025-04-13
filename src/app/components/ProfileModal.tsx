@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User } from "@/app/page";
+import { User } from "@/app/types";
 import fallback from "@/app/assets/fallback.jpg";
 
 type ProfileModalProps = {

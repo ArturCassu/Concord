@@ -1,4 +1,4 @@
-import { MessageData } from "@/app/page";
+import { MessageData } from "@/app/types";
 import { useState } from "react";
 
 type UserGroupProps = {

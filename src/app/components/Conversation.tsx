@@ -1,4 +1,4 @@
-import {MessageData, MessageType} from "@/app/page";
+import {MessageData, MessageType} from "@/app/types";
 import {Message} from "@/app/components/Message";
 import {useEffect, useRef, useState} from "react";
 
