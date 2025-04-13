@@ -2,6 +2,7 @@ import asyncio
 import websockets
 import json
 from aiohttp import web
+import os
 
 connected_users = {}
 
@@ -30,16 +31,22 @@ async def handle_connection(websocket):
 async def health_check(request):
     return web.Response(text="WebSocket server is up!")
 
+async def health_check(request):
+    return web.Response(text="WebSocket server is up!")
+
 async def start_servers():
-    # Inicia o WebSocket
+    # Define porta a partir da variável de ambiente
+    port = int(os.environ.get("PORT", 10000))
+
+    # Inicia o WebSocket em uma porta separada
     websocket_server = websockets.serve(handle_connection, "0.0.0.0", 8765)
 
-    # Inicia o HTTP pra enganar o Render
+    # Inicia o servidor HTTP na porta esperada pelo Render
     app = web.Application()
     app.router.add_get("/", health_check)
     runner = web.AppRunner(app)
     await runner.setup()
-    http_site = web.TCPSite(runner, "0.0.0.0", 10000)
+    http_site = web.TCPSite(runner, "0.0.0.0", port)  # Aqui tá a mudança importante!
 
     await asyncio.gather(websocket_server, http_site.start())
 
